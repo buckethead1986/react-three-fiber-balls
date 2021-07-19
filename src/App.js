@@ -34,12 +34,29 @@ function Ground(props) {
   );
 }
 
+function Wall(props) {
+  const { args = [5, 0.5, 1.5] } = props;
+  const [ref, api] = useBox(() => ({ args }));
+
+  useFrame(() => {
+    api.position.set(4, -2, 0); //x, y, z position on page
+    api.rotation.set(0, 0, 1);
+  });
+
+  return (
+    <mesh ref={ref}>
+      <boxBufferGeometry args={args} />
+      <meshStandardMaterial color={"blue"} />
+    </mesh>
+  );
+}
+
 export default function App() {
   const [balls, setBalls] = useState([]);
   const colors = ["#173f5f", "#20639b", "#ff4f79", "#C44536", "#ed553b"];
   return (
-    <Canvas>
-      <mesh onClick={e => onCanvasClicked(e)}>
+    <mesh onClick={e => onCanvasClicked(e)}>
+      <Canvas>
         <ambientLight intensity={0.5} />
         <spotLight position={[10, 10, 10]} angle={0.15} penumbra={1} />
         <pointLight position={[-10, -10, -10]} />
@@ -49,9 +66,10 @@ export default function App() {
         >
           {balls.map(props => <Ball {...props} />)}
           <Ground />
+          <Wall />
         </Physics>
-      </mesh>
-    </Canvas>
+      </Canvas>
+    </mesh>
   );
   function onCanvasClicked(e) {
     let newBalls = [...balls];
