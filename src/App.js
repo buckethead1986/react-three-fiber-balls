@@ -3,16 +3,35 @@ import { Canvas, useFrame } from "@react-three/fiber";
 import { Physics, useSphere, useBox } from "@react-three/cannon";
 
 function Ball(props) {
-  const { args = [0.2, 32, 32], color } = props;
+  const { args = [0.2, 32, 32], color, position } = props;
   const [ref] = useSphere(() => ({
     args: 0.2,
+    position: [position[0] / 100, position[1] / 100, position[2]],
+    // position: position,
     mass: 1
   }));
+  console.log(props.position);
 
   return (
     <mesh ref={ref}>
       <sphereBufferGeometry args={args} />
       <meshStandardMaterial color={color} />
+    </mesh>
+  );
+}
+
+function Sphere(props) {
+  const [ref, api] = useSphere(() => ({
+    args: [2, 16, 16]
+  }));
+  useFrame(({ mouse }) => {
+    api.position.set(mouse.x, mouse.y, 0);
+  });
+  // console.log(props.position);
+  return (
+    <mesh ref={ref}>
+      <sphereGeometry attach="geometry" args={[props.radius, 32, 32]} />
+      <meshLambertMaterial attach="material" color={props.color} />
     </mesh>
   );
 }
@@ -67,14 +86,16 @@ export default function App() {
           {balls.map(props => <Ball {...props} />)}
           <Ground />
           <Wall />
+          <Sphere radius={1} position={[0, 3, -2]} color="red" />
         </Physics>
       </Canvas>
     </mesh>
   );
   function onCanvasClicked(e) {
+    // console.log(e);
     let newBalls = [...balls];
     const color = colors[getRandomInt(6)];
-    newBalls.push({ color: color });
+    newBalls.push({ color: color, position: [e.clientX, e.clientY, 0] });
     setBalls([...newBalls]);
   }
 }
