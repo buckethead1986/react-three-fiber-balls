@@ -35,6 +35,21 @@ function Sphere(props) {
     </mesh>
   );
 }
+function Sphere2(props) {
+  const [ref, api] = useSphere(() => ({
+    args: [2, 16, 16]
+  }));
+  useFrame(({ mouse }) => {
+    api.position.set(mouse.x, mouse.y, 0);
+  });
+  // console.log(props.position);
+  return (
+    <mesh ref={ref}>
+      <sphereGeometry attach="geometry" args={[props.radius, 32, 32]} />
+      <meshLambertMaterial attach="material" color={props.color} />
+    </mesh>
+  );
+}
 
 function Ground(props) {
   const { args = [10, 0.8, 1] } = props;
