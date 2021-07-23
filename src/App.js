@@ -6,11 +6,11 @@ function Ball(props) {
   const { args = [0.2, 32, 32], color, position } = props;
   const [ref] = useSphere(() => ({
     args: 0.2,
-    position: [position[0] / 100, position[1] / 100, position[2]],
-    // position: position,
+    // position: [position[0] / 100, position[1] / 100, position[2]],
+    position: [-4, 0.3, 0],
     mass: 1
   }));
-  console.log(props.position);
+  // console.log(props.position);
 
   return (
     <mesh ref={ref}>
@@ -107,10 +107,23 @@ export default function App() {
     </mesh>
   );
   function onCanvasClicked(e) {
-    // console.log(e);
+    console.log(
+      // e,
+      e.clientX,
+      e.clientY,
+      e.target.offsetLeft,
+      e.target.offsetTop,
+      e.target.clientWidth,
+      e.target.clientHeight
+    );
+    let mouseX =
+      (e.clientX - e.target.offsetLeft) / e.target.clientWidth * 2 - 1;
+    let mouseY =
+      -((e.clientY - e.target.offsetTop) / e.target.clientHeight) * 2 + 1;
+    console.log(mouseX, mouseY);
     let newBalls = [...balls];
     const color = colors[getRandomInt(6)];
-    newBalls.push({ color: color, position: [e.clientX, e.clientY, 0] });
+    newBalls.push({ color: color, position: [mouseX, mouseY, 0] });
     setBalls([...newBalls]);
   }
 }
