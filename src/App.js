@@ -7,7 +7,7 @@ function Ball(props) {
   const [ref] = useSphere(() => ({
     args: 0.2,
     // position: [position[0] / 100, position[1] / 100, position[2]],
-    position: [-4, 0.3, 0],
+    position: position,
     mass: 1
   }));
   // console.log(props.position);
@@ -21,21 +21,6 @@ function Ball(props) {
 }
 
 function Sphere(props) {
-  const [ref, api] = useSphere(() => ({
-    args: [2, 16, 16]
-  }));
-  useFrame(({ mouse }) => {
-    api.position.set(mouse.x, mouse.y, 0);
-  });
-  // console.log(props.position);
-  return (
-    <mesh ref={ref}>
-      <sphereGeometry attach="geometry" args={[props.radius, 32, 32]} />
-      <meshLambertMaterial attach="material" color={props.color} />
-    </mesh>
-  );
-}
-function Sphere2(props) {
   const [ref, api] = useSphere(() => ({
     args: [2, 16, 16]
   }));
@@ -101,14 +86,13 @@ export default function App() {
           {balls.map(props => <Ball {...props} />)}
           <Ground />
           <Wall />
-          <Sphere radius={1} position={[0, 3, -2]} color="red" />
+          <Ball position={[-5, 0, 0]} />
         </Physics>
       </Canvas>
     </mesh>
   );
   function onCanvasClicked(e) {
     console.log(
-      // e,
       e.clientX,
       e.clientY,
       e.target.offsetLeft,
