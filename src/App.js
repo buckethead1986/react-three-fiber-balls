@@ -4,6 +4,7 @@ import { Physics, useSphere, useBox } from "@react-three/cannon";
 
 function Ball(props) {
   const { args = [0.2, 32, 32], color, position } = props;
+  console.log(position[0], position[1]);
   const [ref] = useSphere(() => ({
     args: 0.2,
     // position: [position[0] / 100, position[1] / 100, position[2]],
@@ -25,16 +26,36 @@ function Sphere(props) {
     args: [2, 16, 16]
   }));
   useFrame(({ mouse }) => {
-    api.position.set(mouse.x, mouse.y, 0);
+    api.position.set(mouse.x, mouse.y, -2);
   });
   // console.log(props.position);
   return (
     <mesh ref={ref}>
       <sphereGeometry attach="geometry" args={[props.radius, 32, 32]} />
-      <meshLambertMaterial attach="material" color={props.color} />
+      <meshLambertMaterial
+        attach="material"
+        transparent={true}
+        opacity={0.25}
+        color={props.color}
+      />
     </mesh>
   );
 }
+// function Sphere2(props) {
+//   const [ref, api] = useSphere(() => ({
+//     args: [2, 16, 16]
+//   }));
+//   useFrame(({ mouse }) => {
+//     api.position.set(mouse.x, mouse.y, 0);
+//   });
+//   // console.log(props.position);
+//   return (
+//     <mesh ref={ref}>
+//       <sphereGeometry attach="geometry" args={[props.radius, 32, 32]} />
+//       <meshLambertMaterial attach="material" color={props.color} />
+//     </mesh>
+//   );
+// }
 
 function Ground(props) {
   const { args = [10, 0.8, 1] } = props;
@@ -86,13 +107,14 @@ export default function App() {
           {balls.map(props => <Ball {...props} />)}
           <Ground />
           <Wall />
-          <Ball position={[-5, 0, 0]} />
+          <Sphere radius={1} position={[2, 4, -2]} color="red" />
         </Physics>
       </Canvas>
     </mesh>
   );
   function onCanvasClicked(e) {
     console.log(
+      // e,
       e.clientX,
       e.clientY,
       e.target.offsetLeft,
@@ -107,7 +129,10 @@ export default function App() {
     console.log(mouseX, mouseY);
     let newBalls = [...balls];
     const color = colors[getRandomInt(6)];
-    newBalls.push({ color: color, position: [mouseX, mouseY, 0] });
+    newBalls.push({
+      color: color,
+      position: [mouseX, 0.3, 0]
+    });
     setBalls([...newBalls]);
   }
 }

@@ -31,7 +31,7 @@ export default function App() {
   return (
     <Canvas
       onClick={e => {
-        console.log("herhehe");
+        console.log("hehehe");
       }}
     >
       <ambientLight intensity={0.5} />
