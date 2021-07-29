@@ -38,22 +38,25 @@ function DraggableDodecahedron({ position: initialPosition }) {
     position: { ...position }
   }));
 
-  function Wall(props) {
-    const { args = [5, 0.5, 1.5] } = props;
-    const [ref, api] = useBox(() => ({ args }));
+  //----------
+  // function Wall(props) {
+  //   const { args = [5, 0.5, 1.5] } = props;
+  //   const [ref, api] = useBox(() => ({ args }));
+  //
+  //   useFrame(() => {
+  //     api.position.set(4, -2, 0); //x, y, z position on page
+  //     api.rotation.set(0, 0, 1);
+  //   });
+  //
+  //   return (
+  //     <mesh ref={ref}>
+  //       <boxBufferGeometry args={args} />
+  //       <meshStandardMaterial color={"blue"} />
+  //     </mesh>
+  //   );
+  // }
+  //--------
 
-    useFrame(() => {
-      api.position.set(4, -2, 0); //x, y, z position on page
-      api.rotation.set(0, 0, 1);
-    });
-
-    return (
-      <mesh ref={ref}>
-        <boxBufferGeometry args={args} />
-        <meshStandardMaterial color={"blue"} />
-      </mesh>
-    );
-  }
   //
   // const bind = useDrag(
   //   ({ offset: [,], xy: [x, y], first, last }) => {
@@ -73,32 +76,32 @@ function DraggableDodecahedron({ position: initialPosition }) {
   //   { pointerEvents: true }
   // );
   //
-  // useFrame(() => {
-  //   // Sync cannon body position with three js
-  //   const deltaX = Math.abs(body.position.x - position[0]);
-  //   const deltaY = Math.abs(body.position.y - position[1]);
-  //   const deltaZ = Math.abs(body.position.z - position[2]);
-  //   if (deltaX > 0.001 || deltaY > 0.001 || deltaZ > 0.001) {
-  //     setPosition(body.position.clone().toArray());
-  //   }
-  //   const bodyQuaternion = body.quaternion.toArray();
-  //   const quaternionDelta = bodyQuaternion
-  //     .map((n, idx) => Math.abs(n - quaternion[idx]))
-  //     .reduce((acc, curr) => acc + curr);
-  //   if (quaternionDelta > 0.01) {
-  //     setQuaternion(body.quaternion.toArray());
-  //   }
-  // });
+  useFrame(() => {
+    // Sync cannon body position with three js
+    const deltaX = Math.abs(body.position.x - position[0]);
+    const deltaY = Math.abs(body.position.y - position[1]);
+    const deltaZ = Math.abs(body.position.z - position[2]);
+    if (deltaX > 0.001 || deltaY > 0.001 || deltaZ > 0.001) {
+      setPosition(body.position.clone().toArray());
+    }
+    const bodyQuaternion = body.quaternion.toArray();
+    const quaternionDelta = bodyQuaternion
+      .map((n, idx) => Math.abs(n - quaternion[idx]))
+      .reduce((acc, curr) => acc + curr);
+    if (quaternionDelta > 0.01) {
+      setQuaternion(body.quaternion.toArray());
+    }
+  });
   return (
     <mesh
       ref={ref}
       // castShadow
-      // position={position}
-      // quaternion={quaternion}
+      position={position}
+      quaternion={quaternion}
       // {...bind()}
-      // onClick={e => {
-      //   e.stopPropagation();
-      // }}
+      onClick={e => {
+        e.stopPropagation();
+      }}
     >
       <dodecahedronBufferGeometry attach="geometry" />
       <meshLambertMaterial attach="material" color="yellow" />
@@ -299,16 +302,44 @@ function Ground(props) {
 function Plane(props) {
   const [ref] = usePlane(() => ({ rotation: [0, 0, 0], ...props }));
   return (
-    <mesh ref={ref} rotation={[0, 0, 0]} onClick={props.onPlaneClick}>
-      <planeBufferGeometry args={[100, 100]} color="lightblue" />
-      <meshLambertMaterial attach="material" color="lightblue" />
+    <mesh
+      ref={ref}
+      rotation={[0, 0, 0]}
+      onClick={e => console.log(props, props.onClick)}
+      // onClick={e => console.log("plane function")}
+    >
+      <planeBufferGeometry args={[100, 100]} />
+      <meshLambertMaterial attach="material" color={props.color} />
     </mesh>
   );
 }
 
+// function OnPlaneClick(e) {
+//   console.log(e, "plane clicked");
+//   const v = new THREE.Vector3();
+//   return useFrame(state => {
+//     state.camera.position.lerp(
+//       v.set(
+//         Math.sin(state.mouse.x) * 5,
+//         4 + Math.atan(state.mouse.y) * 6,
+//         Math.cos(state.mouse.x) * 5
+//       ),
+//       0.1
+//     );
+//     state.camera.lookAt(0, 0, 0);
+//   });
+// }
+
 export default function App2() {
+  const [objects, setObjects] = useState([
+    // <DraggableDodecahedron position={[0, 0, 0]} key={Math.random()} />
+  ]);
+  // useFrame(state => {
+  //   console.log(state.mouse.x);
+  // });
+
   return (
-    <mesh onClick={e => console.log("canvas")}>
+    <mesh>
       <Canvas>
         <FlyControls movementSpeed={5} rollSpeed={0.1} dragToLook={true} />
         <ambientLight intensity={0.5} />
@@ -318,7 +349,7 @@ export default function App2() {
           gravity={[0, -26, 0]}
           defaultContactMaterial={{ restitution: 0.6 }}
         >
-          <Plane onClick={console.log("plane")} />
+          <Plane onClick={console.log("plane")} color={"lightblue"} />
           <Ground />
         </Physics>
       </Canvas>
