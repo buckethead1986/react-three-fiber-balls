@@ -18,12 +18,12 @@ import {
 } from "@react-three/drei";
 // import useEventListener from "@use-it/event-listener";
 
-function DraggableDodecahedron({ props }) {
+function DraggableDodecahedron({ position: initialPosition, ...props }) {
   console.log(props);
-  const { size, viewport } = useThree();
-  const [position, setPosition] = useState(props.initialPosition);
-  const [quaternion, setQuaternion] = useState([0, 0, 0, 0]);
-  const aspect = size.width / viewport.width;
+  // const { size, viewport } = useThree();
+  // const [position, setPosition] = useState(initialPosition);
+  // const [quaternion, setQuaternion] = useState([0, 0, 0, 0]);
+  // const aspect = size.width / viewport.width;
 
   // const { ref, body } = useCannon(
   //   { bodyProps: { mass: 100000 } },
@@ -34,10 +34,10 @@ function DraggableDodecahedron({ props }) {
   //   []
   // );
 
-  const [ref, body] = useBox(() => ({
-    mass: 100000,
-    position: { ...position }
-  }));
+  // const [ref, body] = useBox(() => ({
+  //   mass: 100000,
+  //   position: { ...position }
+  // }));
 
   //----------
   // function Wall(props) {
@@ -79,22 +79,22 @@ function DraggableDodecahedron({ props }) {
   //
   //------------
 
-  // useFrame(() => {
-  //   // Sync cannon body position with three js
-  //   const deltaX = Math.abs(body.position.x - position[0]);
-  //   const deltaY = Math.abs(body.position.y - position[1]);
-  //   const deltaZ = Math.abs(body.position.z - position[2]);
-  //   if (deltaX > 0.001 || deltaY > 0.001 || deltaZ > 0.001) {
-  //     setPosition(body.position.clone().toArray());
-  //   }
-  //   const bodyQuaternion = body.quaternion.toArray();
-  //   const quaternionDelta = bodyQuaternion
-  //     .map((n, idx) => Math.abs(n - quaternion[idx]))
-  //     .reduce((acc, curr) => acc + curr);
-  //   if (quaternionDelta > 0.01) {
-  //     setQuaternion(body.quaternion.toArray());
-  //   }
-  // });
+  useFrame(() => {
+    // Sync cannon body position with three js
+    const deltaX = Math.abs(body.position.x - position[0]);
+    const deltaY = Math.abs(body.position.y - position[1]);
+    const deltaZ = Math.abs(body.position.z - position[2]);
+    if (deltaX > 0.001 || deltaY > 0.001 || deltaZ > 0.001) {
+      setPosition(body.position.clone().toArray());
+    }
+    const bodyQuaternion = body.quaternion.toArray();
+    const quaternionDelta = bodyQuaternion
+      .map((n, idx) => Math.abs(n - quaternion[idx]))
+      .reduce((acc, curr) => acc + curr);
+    if (quaternionDelta > 0.01) {
+      setQuaternion(body.quaternion.toArray());
+    }
+  });
   return (
     <mesh
       ref={ref}
@@ -336,15 +336,6 @@ export default function App2() {
   const [objects, setObjects] = useState([
     // <DraggableDodecahedron position={[0, 0, 0]} key={Math.random()} />
   ]);
-  // const ref = useRef();
-  // useFrame(({ mouse }) => {
-  //   const x = mouse.x;
-  //   const y = mouse.y;
-  // const x = mouse.x * e.target.clientWidth / 2;
-  // const y = mouse.y * e.target.clientHeight / 2;
-  // ref.current.position.set(x, y, 0);
-  // ref.current.rotation.set(-y, x, 0);
-  // });
 
   return (
     <mesh onClick={e => DraggableDodecahedron(e)}>
