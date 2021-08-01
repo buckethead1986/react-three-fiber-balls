@@ -332,7 +332,7 @@ function Plane(props) {
 //   });
 // }
 
-export default function App2() {
+export default function DragableShape() {
   const [objects, setObjects] = useState([
     // <DraggableDodecahedron position={[0, 0, 0]} key={Math.random()} />
   ]);

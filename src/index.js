@@ -3,6 +3,8 @@ import React from "react";
 import "./styles.css";
 // import App from "./App";
 import HoverCubes from "./HoverCubes";
-import App2 from "./DraggableDodecahedron2";
+// import DragableShape from "./DraggableDodecahedron";
+import CreateShapeOnClick from "./CreateShapeOnClick";
+import Test from "./test";
 
-ReactDOM.render(<App2 />, document.getElementById("root"));
+ReactDOM.render(<Test />, document.getElementById("root"));
