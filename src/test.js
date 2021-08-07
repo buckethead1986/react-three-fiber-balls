@@ -52,11 +52,11 @@ function Ball(props) {
     if (ref.current) {
       const controls = ref.current
       // controls.setMode(mode)
-      const callback = event => (orbit.current.enabled = !event.value)
+      const callback = event => {console.log(`a=${ref.current}`, event,  `c=${orbit.current.enabled}`, `d=${!event.value}`); orbit.current.enabled = !event.value; event.stopPropagation()}
       controls.addEventListener("dragging-changed", callback)
       return () => controls.removeEventListener("dragging-changed", callback)
     }
-  })
+  }, console.log('after'))
   // return (
   //   <>
   //     <TransformControls ref={transform} position={position}>
@@ -81,7 +81,9 @@ function Ball(props) {
     >
       {hovered ? (
         <>
-          <TransformControls ref={ref} position={position} >
+          <TransformControls ref={ref} position={position} onClick={e => {setHovered(false);
+          console.log('second');
+          e.stopPropagation()}}>
 
               <mesh castShadow receiveShadow >
               <sphereBufferGeometry args={args} />
@@ -95,6 +97,7 @@ function Ball(props) {
       ) : (
         <mesh ref={ref} onClick={e => {
           setHovered(true);
+          console.log('propagation');
           e.stopPropagation();
         }}>
           <sphereBufferGeometry args={args} />
@@ -190,9 +193,8 @@ export default function Test() {
     <Canvas>
 
       <OrbitControls
-        enablePan={true}
-        enableZoom={true}
-        enableRotate={true}
+        enablePan
+
       />
 
       <Stars />
@@ -202,9 +204,9 @@ export default function Test() {
         <Plane
           color="lightgreen"
           xRotation={-Math.PI / 2}
-          onClick={e => handleCanvasClick(e)}
+          onClick={e => {handleCanvasClick(e); e.stopPropagation()}}
         />
-        <Plane color="lightblue" onClick={e => handleCanvasClick(e)} />
+        <Plane color="lightblue" />
         {balls.map(props => <Ball {...props} />)}
 
 
