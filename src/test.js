@@ -13,8 +13,9 @@ import {
 } from "@react-three/drei";
 
 function Ball(props) {
-  const { args = [0.2, 32, 32], color, position } = props;
+  const { args = [0.2, 32, 32], color } = props;
   const [hovered, setHovered] = useState(false);
+  const [position, setPosition] = useState(props.position)
   const [ref] = useSphere(() => ({
     args: 0.2,
     position: position,
@@ -52,7 +53,7 @@ function Ball(props) {
     if (ref.current) {
       const controls = ref.current
       // controls.setMode(mode)
-      const callback = event => {console.log(`a=${ref.current}`, event,  `c=${orbit.current.enabled}`, `d=${!event.value}`); orbit.current.enabled = !event.value; event.stopPropagation()}
+      const callback = event => {console.log(`a=${ref.current}`, event,  `c=${orbit.current.enabled}`, `d=${!event.value}`); orbit.current.enabled = !event.value;}
       controls.addEventListener("dragging-changed", callback)
       return () => controls.removeEventListener("dragging-changed", callback)
     }
@@ -81,9 +82,11 @@ function Ball(props) {
     >
       {hovered ? (
         <>
-          <TransformControls ref={ref} position={position} onClick={e => {setHovered(false);
-          console.log('second');
-          e.stopPropagation()}}>
+          <TransformControls ref={ref} position={position}
+         onClick={e => {console.log(e, 'second'); setPosition([e.point.x, e.point.y, e.point.z]);
+
+
+          e.stopPropagation()}} onPointerUp={e => console.log(e.point,'pointer up')}>
 
               <mesh castShadow receiveShadow >
               <sphereBufferGeometry args={args} />
@@ -97,6 +100,7 @@ function Ball(props) {
       ) : (
         <mesh ref={ref} onClick={e => {
           setHovered(true);
+          props.setCamera(false);
           console.log('propagation');
           e.stopPropagation();
         }}>
@@ -175,6 +179,7 @@ function getRandomInt(max) {
 
 export default function Test() {
   const [balls, setBalls] = useState([]);
+  const [camera, setCamera] = useState(true)
   const colors = ["#173f5f", "#20639b", "#ff4f79", "#C44536", "#ed553b"];
 
   function handleCanvasClick(e) {
@@ -183,6 +188,7 @@ export default function Test() {
     const color = colors[getRandomInt(6)];
     newBalls.push({
       color: color,
+      setCamera: setCamera,
       position: [e.point.x, e.point.y, e.point.z]
     });
     setBalls([...newBalls]);
@@ -191,11 +197,8 @@ export default function Test() {
   // <OrbitControls/>
   return (
     <Canvas>
-
-      <OrbitControls
-        enablePan
-
-      />
+{camera && <FlyControls movementSpeed={10} rollSpeed={0.1} dragToLook={true} />
+      }
 
       <Stars />
       <ambientLight intensity={0.5} />
@@ -204,7 +207,7 @@ export default function Test() {
         <Plane
           color="lightgreen"
           xRotation={-Math.PI / 2}
-          onClick={e => {handleCanvasClick(e); e.stopPropagation()}}
+          onClick={e => {console.log(e); handleCanvasClick(e); e.stopPropagation()}}
         />
         <Plane color="lightblue" />
         {balls.map(props => <Ball {...props} />)}
