@@ -18,49 +18,28 @@ function Ball(props) {
   const [position, setPosition] = useState(props.position)
   const [ref] = useSphere(() => ({
     args: 0.2,
-    position: position,
-    mass: 1
+    position: position
   }));
 
-  // return (
-  //   <mesh
-  //     ref={ref}
-  //     onClick={e => {
-  //       setHovered(true);
-  //       e.stopPropagation();
-  //     }}
-  //     onPointerMissed={() => setHovered(false)}
-  //   >
-  //     {hovered ? (
-  //       <TransformControls>
-          // <sphereBufferGeometry args={args} />
-          // <meshStandardMaterial color={color} />
-  //       </TransformControls>
-  //     ) : (
-  //       <mesh>
-  //         <sphereBufferGeometry args={args} />
-  //         <meshStandardMaterial color={color} />
-  //       </mesh>
-  //     )}
-  //   </mesh>
-  // );
+
 
   const orbit = useRef()
   const transform = useRef()
   // const mode = useControl("mode", { type: "select", items: ["scale", "rotate", "translate"] })
   // const { nodes, materials } = useLoader(GLTFLoader, "/scene.gltf")
-  useEffect(() => {
+
+  //orbit.current.enabled = !event.value;
+  useEffect((e) => {
     if (ref.current) {
       const controls = ref.current
       // controls.setMode(mode)
-      // setPosition(ref.current.point)
-      const callback = event => {console.log(`a=${ref.current}`, ref.current,  `c=${orbit.current.enabled}`, `d=${!event.value}`); setPosition([ref.current.pointEnd.x, ref.current.pointEnd.y, ref.current.pointEnd.z]);
-//orbit.current.enabled = !event.value;
+
+      const callback = event => {console.log(`a=${ref.current}`, ref.current, `d=${!event.value}`); setPosition([ref.current.pointEnd.x, ref.current.pointEnd.y, ref.current.pointEnd.z]);
     }
       controls.addEventListener("dragging-changed", callback)
       return () => controls.removeEventListener("dragging-changed", callback)
     }
-  }, console.log('after'))
+  })
   // return (
   //   <>
   //     <TransformControls ref={transform} position={position}>
@@ -80,6 +59,8 @@ function Ball(props) {
 //-----------
 //separate out box logic into a separate component
 //send onClick ref up to parent component, and base camera/flycontrols/etc off whether or not youre transforming something.
+// <OrbitControls ref={orbit}/>
+// onPointerMissed={e => {e.stopPropagation();console.log('missed', e);setHovered(false);props.setCamera(true)}}>
   return (
     <
     >
@@ -89,10 +70,9 @@ function Ball(props) {
            onPointerUp={e => console.log(e.point,'pointer up')}
          onClick={e => {console.log(e, 'second');
 
-
           e.stopPropagation()}}
-          onPointerMissed={e => {console.log('missed');setHovered(false);props.setCamera(true);e.stopPropagation()}}>
-
+          onUpdate={(self) => {console.log(self.position); props.updateBall(props.ballId, self.position)}}
+>
               <mesh castShadow receiveShadow >
               <sphereBufferGeometry args={args} />
               <meshStandardMaterial color={color} />
@@ -100,16 +80,16 @@ function Ball(props) {
 
 
           </TransformControls>
-          <OrbitControls ref={orbit}/>
         </>
       ) : (
         <mesh ref={ref} onClick={e => {
+          e.stopPropagation();
 
           setPosition(e.point);
           props.setCamera(false);
           console.log('propagation', e.point);
-          e.stopPropagation();
-        }, setHovered(true)}>
+          setHovered(true)
+        }}>
           <sphereBufferGeometry args={args} />
           <meshStandardMaterial color={color} />
         </mesh>
@@ -184,20 +164,32 @@ function getRandomInt(max) {
 }
 
 export default function Test() {
-  const [balls, setBalls] = useState([]);
+  const [balls, setBalls] = useState({});
   const [camera, setCamera] = useState(true)
   const colors = ["#173f5f", "#20639b", "#ff4f79", "#C44536", "#ed553b"];
 
+function updateBall(ballId, newPosition) {
+  console.log(ballId, newPosition)
+  // let newBalls = Object.assign({}, balls)
+  // newBalls[ballId].position = newPosition
+  // setBalls(newBalls)
+}
+
   function handleCanvasClick(e) {
-    // console.log("canvas click", e.clientX, e.clientY, e.point);
-    let newBalls = [...balls];
+    if(camera) {
+    let ballId = `ball-${Object.keys(balls).length}`
+    let newBalls = Object.assign({}, balls)
     const color = colors[getRandomInt(6)];
-    newBalls.push({
+    newBalls[ballId] = {
+      ballId: ballId,
+      updateBall: updateBall,
       color: color,
       setCamera: setCamera,
       position: [e.point.x, e.point.y, e.point.z]
-    });
-    setBalls([...newBalls]);
+    }
+    setBalls(newBalls);
+    // console.log(newBalls, balls)
+  }
   }
 
   // <OrbitControls/>
@@ -212,12 +204,13 @@ export default function Test() {
       <Physics>
         <Plane
           color="lightgreen"
-          xRotation={-Math.PI / 2}
           onClick={e => {console.log(e); handleCanvasClick(e); e.stopPropagation()}}
         />
-        <Plane color="lightblue" />
-        {balls.map(props => <Ball {...props} />)}
 
+
+        {Object.keys(balls).map(function(key, index) {
+        return  <Ball {...balls[key]} />
+        })}
 
       </Physics>
     </Canvas>
