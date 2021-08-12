@@ -112,52 +112,9 @@ function Plane(props) {
   );
 }
 
-// function Plane2(props) {
-//   const [ref] = usePlane(() => ({
-//     rotation: [0, 0, 0]
-//   }));
-//   return (
-//     <mesh
-//       ref={ref}
-//       onClick={e => console.log("clicked", e)}
-//       onPointerDown={() => console.log("pointerDown")}
-//     >
-//       >
-//       <planeBufferGeometry attach="geometry" args={[100, 100]} />
-//       <meshLambertMaterial attach="material" color={props.color} />
-//     </mesh>
-//   );
-// }
 
 
 
-// function Main() {
-//   const orbit = useRef()
-//   const transform = useRef()
-//   const { camera, gl } = useThree()
-//   const [ref, mesh] = useResource()
-//
-//   useFrame(() => orbit.current.update())
-//   useEffect(() => {
-//     if (transform.current) {
-//       const controls = transform.current
-//       const callback = event => (orbit.current.enabled = !event.value)
-//       controls.addEventListener('dragging-changed', callback)
-//       return () => controls.removeEventListener('dragging-changed', callback)
-//     }
-//   })
-//
-//   return (
-//     <>
-//       <mesh ref={ref}>
-//         <boxBufferGeometry attach="geometry" args={[2, 2, 2]} />
-//         <meshNormalMaterial attach="material" />
-//       </mesh>
-//       <orbitControls ref={orbit} args={[camera, gl.domElement]} enableDamping dampingFactor={0.1} rotateSpeed={0.1} />
-//       {mesh && <transformControls ref={transform} args={[camera, gl.domElement]} onUpdate={self => self.attach(mesh)} />}
-//     </>
-//   )
-// }
 
 function getRandomInt(max) {
   return Math.floor(Math.random() * Math.floor(max));
