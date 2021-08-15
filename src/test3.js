@@ -1,118 +1,175 @@
-import * as THREE from "three";
-import ReactDOM from "react-dom";
-import React, {
-  Fragment,
-  useRef,
-  useEffect,
-  useState,
-  useCallback,
-  useContext,
-  useMemo
-} from "react";
-import { Canvas, useThree } from "react-three-fiber";
-// import { OrbitControls } from "@react-three/drei/OrbitControls";
-import { OrbitControls, Stars } from "@react-three/drei";
+import React, { useRef, useState, useEffect } from "react";
+import { Canvas, useFrame, useThree } from "@react-three/fiber";
+import { Physics, useBox, usePlane, useSphere } from "@react-three/cannon";
 import "./styles.css";
+import {
+  OrbitControls,
+  FlyControls,
+  DeviceOrientationControls,
+  PointerLockControls,
+  TransformControls,
+  PerspectiveCamera,
+  Stars
+} from "@react-three/drei";
 
-function useHover() {
-  const [hovered, setHover] = useState(false);
-  const hover = useCallback(e => (e.stopPropagation(), setHover(true)), []);
-  const unhover = useCallback(e => setHover(false), []);
-  return [{ onPointerOver: hover, onPointerOut: unhover }, hovered];
-}
+function Ball(props) {
+  const { args = [0.2, 32, 32], color } = props;
+  const [hovered, setHovered] = useState(false);
+  const [position, setPosition] = useState(props.position)
+  const [ref] = useSphere(() => ({
+    args: 0.2,
+    position: position
+  }));
 
-function useDrag(onDrag, onEnd) {
-  const [active, setActive] = useState(false);
-  const [, toggle] = useContext(camContext);
-  const activeRef = useRef();
-  const down = useCallback(
-    e => (
-      setActive(true),
-      toggle(false),
-      e.stopPropagation(),
-      e.target.setPointerCapture(e.pointerId)
-    ),
-    [toggle]
-  );
-  const up = useCallback(
-    e => (
-      setActive(false),
-      toggle(true),
-      e.target.releasePointerCapture(e.pointerId),
-      onEnd && onEnd()
-    ),
-    [onEnd, toggle]
-  );
-  const move = useCallback(
-    event =>
-      activeRef.current &&
-      (event.stopPropagation(), onDrag(event.unprojectedPoint)),
-    [onDrag]
-  );
-  useEffect(() => void (activeRef.current = active));
-  return { onPointerDown: down, onPointerUp: up, onPointerMove: move };
-}
 
-function EndPoint({ position, onDrag, onEnd }) {
-  let [bindHover, hovered] = useHover();
-  let bindDrag = useDrag(onDrag, onEnd);
+
+  const orbit = useRef()
+  const transform = useRef()
+  // const mode = useControl("mode", { type: "select", items: ["scale", "rotate", "translate"] })
+  // const { nodes, materials } = useLoader(GLTFLoader, "/scene.gltf")
+
+  //orbit.current.enabled = !event.value;
+  useEffect((e) => {
+    if (ref.current) {
+      const controls = ref.current
+      // controls.setMode(mode)
+
+      const callback = event => {console.log(`a=${ref.current}`, ref.current, `d=${!event.value}`); setPosition([ref.current.pointEnd.x, ref.current.pointEnd.y, ref.current.pointEnd.z]);
+    }
+      controls.addEventListener("dragging-changed", callback)
+      return () => controls.removeEventListener("dragging-changed", callback)
+    }
+  })
+  // return (
+  //   <>
+  //     <TransformControls ref={transform} position={position}>
+  //
+  //         <mesh castShadow receiveShadow >
+  //         <sphereBufferGeometry args={args} />
+  //         <meshStandardMaterial color={color} />
+  //         </mesh>
+  //
+  //
+  //     </TransformControls>
+  //     <OrbitControls ref={orbit}/>
+  //   </>
+  // )
+
+
+//-----------
+//separate out box logic into a separate component
+//send onClick ref up to parent component, and base camera/flycontrols/etc off whether or not youre transforming something.
+// <OrbitControls ref={orbit}/>
+// onPointerMissed={e => {e.stopPropagation();console.log('missed', e);setHovered(false);props.setCamera(true)}}>
   return (
-    <mesh position={position} {...bindDrag} {...bindHover}>
-      <sphereBufferGeometry args={[7.5, 16, 16]} />
-      <meshBasicMaterial color={hovered ? "hotpink" : "white"} />
+    <
+    >
+      {hovered ? (
+        <>
+          <TransformControls ref={ref} position={position}
+           onPointerUp={e => console.log(e.point,'pointer up')}
+         onClick={e => {console.log(e, 'second');
+
+          e.stopPropagation()}}
+          onUpdate={(self) => {console.log(self.position); props.updateBall(props.ballId, self.position)}}
+>
+              <mesh castShadow receiveShadow >
+              <sphereBufferGeometry args={args} />
+              <meshStandardMaterial color={color} />
+              </mesh>
+
+
+          </TransformControls>
+        </>
+      ) : (
+        <mesh ref={ref} onClick={e => {
+          e.stopPropagation();
+
+          setPosition(e.point);
+          props.setCamera(false);
+          console.log('propagation', e.point);
+          setHovered(true)
+        }}>
+          <sphereBufferGeometry args={args} />
+          <meshStandardMaterial color={color} />
+        </mesh>
+      )}
+    </>
+  );
+}
+
+function Plane(props) {
+  const { color, xRotation = 0 } = props;
+  const [ref] = usePlane(() => ({
+    rotation: [xRotation, 0, 0],
+    position: [0, -10, 0]
+  }));
+  return (
+    <mesh ref={ref} onClick={props.onClick}>
+      <planeBufferGeometry args={[100, 100]} />
+      <meshLambertMaterial attach="material" color={color} />
     </mesh>
   );
 }
 
-function Line({ defaultStart, defaultEnd }) {
-  const [start, setStart] = useState(defaultStart);
-  const [end, setEnd] = useState(defaultEnd);
-  const vertices = useMemo(
-    () => [start, end].map(v => new THREE.Vector3(...v)),
-    [start, end]
-  );
-  const update = useCallback(self => {
-    self.verticesNeedUpdate = true;
-    self.computeBoundingSphere();
-  }, []);
-  return (
-    <Fragment>
-      <line>
-        <geometry vertices={vertices} onUpdate={update} />
-        <lineBasicMaterial color="white" />
-      </line>
-      <EndPoint position={start} onDrag={v => setStart(v.toArray())} />
-      <EndPoint position={end} onDrag={v => setEnd(v.toArray())} />
-    </Fragment>
-  );
+
+
+
+
+function getRandomInt(max) {
+  return Math.floor(Math.random() * Math.floor(max));
 }
 
-const camContext = React.createContext();
-function Controls({ children }) {
-  const { gl, camera } = useThree();
-  const api = useState(true);
-  return (
-    <Fragment>
-      <OrbitControls
-        args={[camera, gl.domElement]}
-        enableDamping
-        enabled={api[0]}
-      />
-      <camContext.Provider value={api}>{children}</camContext.Provider>
-    </Fragment>
-  );
+export default function Test() {
+  const [balls, setBalls] = useState({});
+  const [camera, setCamera] = useState(true)
+  const colors = ["#173f5f", "#20639b", "#ff4f79", "#C44536", "#ed553b"];
+
+function updateBall(ballId, newPosition) {
+  console.log(ballId, newPosition)
+  // let newBalls = Object.assign({}, balls)
+  // newBalls[ballId].position = newPosition
+  // setBalls(newBalls)
 }
 
-function Test3() {
+  function handleCanvasClick(e) {
+    if(camera) {
+    let ballId = `ball-${Object.keys(balls).length}`
+    let newBalls = Object.assign({}, balls)
+    const color = colors[getRandomInt(6)];
+    newBalls[ballId] = {
+      ballId: ballId,
+      updateBall: updateBall,
+      color: color,
+      setCamera: setCamera,
+      position: [e.point.x, e.point.y, e.point.z]
+    }
+    setBalls(newBalls);
+    // console.log(newBalls, balls)
+  }
+  }
+
+  // <OrbitControls/>
   return (
-    <Canvas invalidateFrameloop orthographic camera={{ position: [0, 0, 500] }}>
-      <Controls>
-        <Line defaultStart={[-100, -100, 0]} defaultEnd={[0, 100, 0]} />
-        <Line defaultStart={[0, 100, 0]} defaultEnd={[100, -100, 0]} />
-      </Controls>
+    <Canvas>
+{camera && <FlyControls movementSpeed={10} rollSpeed={0.1} dragToLook={true} />
+      }
+
+      <Stars />
+      <ambientLight intensity={0.5} />
+      <spotLight position={[10, 15, 10]} angle={0.3} />
+      <Physics>
+        <Plane
+          color="lightgreen"
+          onClick={e => {console.log(e); handleCanvasClick(e); e.stopPropagation()}}
+        />
+
+
+        {Object.keys(balls).map(function(key, index) {
+        return  <Ball {...balls[key]} />
+        })}
+
+      </Physics>
     </Canvas>
   );
 }
-
-export default { Test3 };
-// ReactDOM.render(<App />, document.getElementById("root"));
