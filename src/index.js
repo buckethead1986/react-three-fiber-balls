@@ -10,5 +10,6 @@ import Test2 from "./test2";
 import Test3 from "./test3";
 import CreateBallsAndTransformOnClick from "./CreateBallsAndTransformOnClick";
 import DodecahedronFollowingMouse from "./DodecahedronFollowingMouse";
+import TransformControls from "./TransformControls";
 
-ReactDOM.render(<Test3 />, document.getElementById("root"));
+ReactDOM.render(<TransformControls />, document.getElementById("root"));
