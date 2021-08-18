@@ -1,4 +1,4 @@
-import React, { useRef, useEffect } from "react";
+import React, { useRef, useEffect, useState } from "react";
 import { Canvas } from "@react-three/fiber";
 // import { withKnobs, optionsKnob, boolean } from '@storybook/addon-knobs'
 // import { TransformControls as TransformControlsImpl } from 'three-stdlib'
@@ -41,46 +41,61 @@ import {
 // }
 
 function TransformControlsLockScene({
+  transform, setTransform,
   mode,
   showX,
   showY,
   showZ
 }) {
+  const [position, setPosition] = useState([])
+  const [active, setActive] = useState(false)
   const orbitControls = useRef();
   const transformControls = useRef();
 
   useEffect(() => {
     if (transformControls.current) {
+      console.log('current')
       const { current: controls } = transformControls;
-      const callback = event => (orbitControls.current.enabled = !event.value);
+      const callback = event => {
+        // orbitControls.current.enabled = !event.value;
+        setPosition(transformControls.current.point)};
       controls.addEventListener("dragging-changed", callback);
       return () => controls.removeEventListener("dragging-changed", callback);
     }
+
   });
 
   return (
     <>
+    {active ? (
       <TransformControls
+      position={transform}
         ref={transformControls}
         mode={mode}
         showX={showX}
         showY={showY}
         showZ={showZ}
+
       >
         <Box>
           <meshBasicMaterial attach="material" wireframe />
         </Box>
       </TransformControls>
-      <OrbitControls ref={orbitControls} />
-    </>
+  ) : (<Box onPointerOver={setActive(true)}>
+    <meshBasicMaterial attach="material" wireframe />
+  </Box>)}
+  </>
   );
 }
+// <OrbitControls ref={orbitControls} />
 
 export default function App() {
+  const [transform1, setTransform1] = useState([0,-5, 0])
+  const [transform2, setTransform2] = useState([-5,0, 0])
   return (
   <Canvas>
-  <TransformControlsLockScene/>
-  <TransformControlsLockScene position={[0,-5, 0]}/>
+  <TransformControlsLockScene transform={transform1} setTransform={setTransform1}/>
+  <TransformControlsLockScene transform={transform2} setTransform={setTransform2}/>
   </Canvas>
 )
 }

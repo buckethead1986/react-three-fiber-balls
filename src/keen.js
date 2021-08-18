@@ -114,12 +114,12 @@ function App() {
       onClick: (() => { console.log('keen-1'); setActive('keen-0')})
     }
     ]);
-    function test2(prop) {
+    useEffect((prop) => {
   console.log('before', active, prop)
       setActive(prop)
       console.log('after', active, prop)
       console.log('keens', keens)
-    }
+    });
   return (
     <>
       <Canvas shadowMap camera={{ position: [0, 0, 17], far: 50 }}>
@@ -150,4 +150,3 @@ ReactDOM.render(<App />, document.getElementById("root"))
 
   // < Keen onClick = {() => { console.log('keen-0'); setActive('keen-1') }} id = { 'keen-0'} active = { active } position = { [0, -7, 0]} />
     // <Keen onClick={() => { console.log('keen-1'); setActive('keen-0') }} id={'keen-1'} active={active} position={[-7, 0, 0]} />
-  
