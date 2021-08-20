@@ -11,5 +11,6 @@ import Test3 from "./test3";
 import CreateBallsAndTransformOnClick from "./CreateBallsAndTransformOnClick";
 import DodecahedronFollowingMouse from "./DodecahedronFollowingMouse";
 import TransformControls from "./TransformControls";
+import ControlPoints from "./ControlPoints";
 
-ReactDOM.render(<TransformControls />, document.getElementById("root"));
+ReactDOM.render(<ControlPoints />, document.getElementById("root"));
