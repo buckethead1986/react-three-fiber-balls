@@ -53,7 +53,6 @@ function Ball(props) {
     if (ref.current) {
       const controls = ref.current
       // controls.setMode(mode)
-      // setPosition(ref.current.point)
       const callback = event => {console.log(`a=${ref.current}`, ref.current,  `c=${orbit.current.enabled}`, `d=${!event.value}`); setPosition([ref.current.pointEnd.x, ref.current.pointEnd.y, ref.current.pointEnd.z]);
 //orbit.current.enabled = !event.value;
     }
@@ -132,22 +131,6 @@ function Plane(props) {
   );
 }
 
-// function Plane2(props) {
-//   const [ref] = usePlane(() => ({
-//     rotation: [0, 0, 0]
-//   }));
-//   return (
-//     <mesh
-//       ref={ref}
-//       onClick={e => console.log("clicked", e)}
-//       onPointerDown={() => console.log("pointerDown")}
-//     >
-//       >
-//       <planeBufferGeometry attach="geometry" args={[100, 100]} />
-//       <meshLambertMaterial attach="material" color={props.color} />
-//     </mesh>
-//   );
-// }
 
 
 
@@ -189,7 +172,7 @@ export default function Test() {
   const colors = ["#173f5f", "#20639b", "#ff4f79", "#C44536", "#ed553b"];
 
   function handleCanvasClick(e) {
-    // console.log("canvas click", e.clientX, e.clientY, e.point);
+
     let newBalls = [...balls];
     const color = colors[getRandomInt(6)];
     newBalls.push({

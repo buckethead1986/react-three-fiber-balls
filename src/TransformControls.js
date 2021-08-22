@@ -1,9 +1,5 @@
 import React, { useRef, useEffect, useState } from "react";
 import { Canvas } from "@react-three/fiber";
-// import { withKnobs, optionsKnob, boolean } from '@storybook/addon-knobs'
-// import { TransformControls as TransformControlsImpl } from 'three-stdlib'
-
-// import { Setup } from '../Setup'
 
 import {
   FlyControls,
@@ -138,6 +134,3 @@ const handleChange = (id) => {
 //     />
 //   )
 // }
-
-// TransformControlsLockSt.storyName = 'Lock orbit controls while transforming'
-// TransformControlsLockSt.decorators = [withKnobs, (storyFn) => <Setup controls={false}>{storyFn()}</Setup>]
