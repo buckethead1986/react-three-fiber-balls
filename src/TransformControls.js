@@ -29,13 +29,6 @@ import {
 //   )
 // }
 
-// TransformControlsStory.storyName = 'Default'
-//
-// export default {
-//   title: 'Controls/TransformControls',
-//   component: TransformControls,
-// }
-
 function TransformControlsLockScene(props) {
   // const {
   //   transform, setTransform,
@@ -73,11 +66,9 @@ function TransformControlsLockScene(props) {
       <TransformControls
 onClick={props.onClick}
         ref={transformControls}
-
         showX={state.showX}
         showY={state.showY}
         showZ={state.showZ}
-
       >
         <Box >
           <meshBasicMaterial attach="material"  />
