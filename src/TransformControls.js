@@ -9,25 +9,7 @@ import {
   TransformControls
 } from "@react-three/drei";
 
-// export default function TransformControlsStory() {
-//   return (
-//     <Canvas>
-//     <FlyControls movementSpeed={10} rollSpeed={0.1} dragToLook={true} />
-//
-//
-//       <Stars />
-//       <ambientLight intensity={0.5} />
-//       <spotLight position={[10, 15, 10]} angle={0.3} />
-//
-//       <TransformControls>
-//         <Box>
-//           <meshBasicMaterial attach="material" wireframe />
-//         </Box>
-//       </TransformControls>
-//
-// </Canvas>
-//   )
-// }
+
 
 function TransformControlsLockScene(props) {
   // const {
@@ -107,21 +89,18 @@ const handleChange = (id) => {
 )
 }
 
-// export const TransformControlsLockSt = () => {
-//   const modesObj = {
-//     scale: 'scale',
-//     rotate: 'rotate',
-//     translate: 'translate',
-//   }
-//
+// export default function TransformControlsStory() {
 //   return (
-//     <TransformControlsLockScene
-//       mode={optionsKnob('mode', modesObj, 'translate', {
-//         display: 'radio',
-//       })}
-//       showX={boolean('showX', true)}
-//       showY={boolean('showY', true)}
-//       showZ={boolean('showZ', true)}
-//     />
+//     <Canvas>
+//     <FlyControls movementSpeed={10} rollSpeed={0.1} dragToLook={true} />
+//       <Stars />
+//       <ambientLight intensity={0.5} />
+//       <spotLight position={[10, 15, 10]} angle={0.3} />
+//       <TransformControls>
+//         <Box>
+//           <meshBasicMaterial attach="material" wireframe />
+//         </Box>
+//       </TransformControls>
+// </Canvas>
 //   )
 // }
