@@ -78,6 +78,7 @@ function Wall(props) {
 
 export default function App() {
   const [balls, setBalls] = useState([]);
+  // const [active, setActive] = useState([])
   const colors = ["#173f5f", "#20639b", "#ff4f79", "#C44536", "#ed553b"];
   return (
     <mesh onClick={e => onCanvasClicked(e)}>
@@ -98,15 +99,15 @@ export default function App() {
     </mesh>
   );
   function onCanvasClicked(e) {
-    console.log(
-      // e,
-      e.clientX,
-      e.clientY,
-      e.target.offsetLeft,
-      e.target.offsetTop,
-      e.target.clientWidth,
-      e.target.clientHeight
-    );
+    // console.log(
+    //   // e,
+    //   e.clientX,
+    //   e.clientY,
+    //   e.target.offsetLeft,
+    //   e.target.offsetTop,
+    //   e.target.clientWidth,
+    //   e.target.clientHeight
+    // );
     let mouseX =
       (e.clientX - e.target.offsetLeft) / e.target.clientWidth * 2 - 1;
     let mouseY =

@@ -9,8 +9,6 @@ import {
   TransformControls
 } from "@react-three/drei";
 
-
-
 function TransformControlsLockScene(props) {
   // const {
   //   transform, setTransform,
@@ -19,8 +17,8 @@ function TransformControlsLockScene(props) {
   //   showY,
   //   showZ
   // } = props;
-  const [state, setState] = useState(props)
-  console.log(state, props)
+  const [state, setState] = useState(props);
+  console.log(state, props);
   // const [active, setActive] = useState(false)
   const orbitControls = useRef();
   const transformControls = useRef();
@@ -38,55 +36,74 @@ function TransformControlsLockScene(props) {
   //
   // });
 
-  useEffect(() => {
-    setState({...state, active:props.active});
-  }, [props])
+  useEffect(
+    () => {
+      setState({ ...state, active: props.active });
+    },
+    [props]
+  );
 
   return (
-    <>
-    {state.active === state.id ? (
-      <TransformControls
-onClick={props.onClick}
-        ref={transformControls}
-        showX={state.showX}
-        showY={state.showY}
-        showZ={state.showZ}
-      >
-        <Box >
-          <meshBasicMaterial attach="material"  />
+    <group ref={transformControls}>
+      {state.active === state.id ? (
+        <TransformControls
+          onClick={props.onClick}
+          showX={state.showX}
+          showY={state.showY}
+          showZ={state.showZ}
+        >
+          <Box>
+            <meshBasicMaterial attach="material" />
+          </Box>
+        </TransformControls>
+      ) : (
+        <Box
+          onClick={() => props.onClick(props.id)}
+          onPointerOver={() => {
+            console.log("active");
+          }}
+        >
+          <meshBasicMaterial attach="material" wireframe />
         </Box>
-      </TransformControls>
-  ) : (<Box ref={transformControls} onClick={() => props.onClick(props.id)} onPointerOver={() => {console.log('active')}}>
-    <meshBasicMaterial attach="material" wireframe />
-  </Box>)}
-  </>
+      )}
+    </group>
   );
 }
 // <OrbitControls ref={orbitControls} />
 
 export default function App() {
-  const [cubes, setCubes] = useState([])
-  const [transform1, setTransform1] = useState({id:1})
-  const [transform2, setTransform2] = useState({id:2})
- const [active, setActive] = useState(null)
+  const [cubes, setCubes] = useState([]);
+  const [transform1, setTransform1] = useState({ id: 1 });
+  const [transform2, setTransform2] = useState({ id: 2 });
+  const [active, setActive] = useState(null);
 
-const handleChange = (id) => {
-  console.log('handleChange', id);
-  setActive(id)
+  const handleChange = id => {
+    console.log("handleChange", id);
+    setActive(id);
 
-  // let newCubes = [...cubes];
-  // const color = colors[getRandomInt(6)];
-  // newCubes.push({
-  //
-  // });
-  // setCubes([...newCubes]);
-}
+    // let newCubes = [...cubes];
+    // const color = colors[getRandomInt(6)];
+    // newCubes.push({
+    //
+    // });
+    // setCubes([...newCubes]);
+  };
   return (
-  <Canvas >
-  <TransformControlsLockScene {...transform1} position={[0,-4, 0]} active={active} onClick={handleChange}/>
-  <TransformControlsLockScene {...transform2} position={[-5,0, 0]} active={active} onClick={handleChange}/>
-  </Canvas>
-)
+    <Canvas>
+      <TransformControlsLockScene
+        {...transform1}
+        position={[0, -4, 0]}
+        active={active}
+        onClick={handleChange}
+      />
+      <TransformControlsLockScene
+        {...transform2}
+        position={[-5, 0, 0]}
+        active={active}
+        onClick={handleChange}
+      />
+    </Canvas>
+  );
 }
 
 // export default function TransformControlsStory() {
