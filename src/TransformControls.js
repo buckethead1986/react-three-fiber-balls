@@ -44,29 +44,22 @@ function TransformControlsLockScene(props) {
   );
 
   return (
-    <group ref={transformControls}>
-      {state.active === state.id ? (
-        <TransformControls
-          onClick={props.onClick}
-          showX={state.showX}
-          showY={state.showY}
-          showZ={state.showZ}
-        >
-          <Box>
-            <meshBasicMaterial attach="material" />
-          </Box>
-        </TransformControls>
-      ) : (
-        <Box
-          onClick={() => props.onClick(props.id)}
-          onPointerOver={() => {
-            console.log("active");
-          }}
-        >
-          <meshBasicMaterial attach="material" wireframe />
-        </Box>
-      )}
-    </group>
+    <TransformControls
+      ref={transformControls}
+      enabled={props.active === props.id ? true : false}
+      showX={props.active === props.id ? true : false}
+      showY={props.active === props.id ? true : false}
+      showZ={props.active === props.id ? true : false}
+    >
+      <Box
+        onClick={() => props.onClick(props.id)}
+        onPointerOver={() => {
+          console.log("active");
+        }}
+      >
+        <meshBasicMaterial attach="material" wireframe />
+      </Box>
+    </TransformControls>
   );
 }
 // <OrbitControls ref={orbitControls} />

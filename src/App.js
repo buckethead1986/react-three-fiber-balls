@@ -1,10 +1,12 @@
 import React, { useRef, useState } from "react";
 import { Canvas, useFrame } from "@react-three/fiber";
 import { Physics, useSphere, useBox } from "@react-three/cannon";
+import { TransformControls } from "@react-three/drei";
 
 function Ball(props) {
   const { args = [0.2, 32, 32], color, position } = props;
-  console.log(position[0], position[1]);
+  // console.log(position[0], position[1]);
+  console.log("ball:", props.id, "active:", props.active);
   const [ref] = useSphere(() => ({
     args: 0.2,
     // position: [position[0] / 100, position[1] / 100, position[2]],
@@ -14,10 +16,20 @@ function Ball(props) {
   // console.log(props.position);
 
   return (
-    <mesh ref={ref}>
-      <sphereBufferGeometry args={args} />
-      <meshStandardMaterial color={color} />
-    </mesh>
+    <TransformControls
+      ref={ref}
+      enabled={props.active === props.id ? true : false}
+      showX={props.active === props.id ? true : false}
+      showY={props.active === props.id ? true : false}
+      showZ={props.active === props.id ? true : false}
+    >
+      <mesh key={props.id} onClick={() => props.setActive(props.id)}>
+        <sphereBufferGeometry args={args} />
+        <meshStandardMaterial
+          color={props.id === props.active ? "purple" : color}
+        />
+      </mesh>
+    </TransformControls>
   );
 }
 
@@ -78,8 +90,10 @@ function Wall(props) {
 
 export default function App() {
   const [balls, setBalls] = useState([]);
-  // const [active, setActive] = useState([])
+  const [active, setActive] = useState("");
+  const [counter, setCounter] = useState(0);
   const colors = ["#173f5f", "#20639b", "#ff4f79", "#C44536", "#ed553b"];
+
   return (
     <mesh onClick={e => onCanvasClicked(e)}>
       <Canvas>
@@ -90,14 +104,16 @@ export default function App() {
           gravity={[0, -26, 0]}
           defaultContactMaterial={{ restitution: 0.6 }}
         >
-          {balls.map(props => <Ball {...props} />)}
+          {balls.map(props => (
+            <Ball active={active} setActive={setActive} {...props} />
+          ))}
           <Ground />
           <Wall />
-          <Sphere radius={1} position={[2, 4, -2]} color="red" />
         </Physics>
       </Canvas>
     </mesh>
   );
+  // <Sphere radius={1} position={[2, 4, -2]} color="red" /> //move above line 98 </Physics>
   function onCanvasClicked(e) {
     // console.log(
     //   // e,
@@ -112,14 +128,16 @@ export default function App() {
       (e.clientX - e.target.offsetLeft) / e.target.clientWidth * 2 - 1;
     let mouseY =
       -((e.clientY - e.target.offsetTop) / e.target.clientHeight) * 2 + 1;
-    console.log(mouseX, mouseY);
+    console.log(mouseX, mouseY, counter);
     let newBalls = [...balls];
     const color = colors[getRandomInt(6)];
     newBalls.push({
+      id: `ball-${counter}`,
       color: color,
       position: [mouseX, 0.3, 0]
     });
     setBalls([...newBalls]);
+    setCounter(counter + 1);
   }
 }
 
