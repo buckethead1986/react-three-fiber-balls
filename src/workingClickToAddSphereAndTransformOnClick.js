@@ -105,7 +105,7 @@ function Plane(props) {
     position: [0, -10, 0]
   }));
   return (
-    <mesh ref={ref} onClick={props.onClick} onPointerUp={props.onPointerUp}>
+    <mesh ref={ref} onClick={props.onClick}>
       <planeBufferGeometry args={[100, 100]} />
       <meshLambertMaterial
         attach="material"
@@ -113,6 +113,33 @@ function Plane(props) {
         transparent={true}
         opacity={props.opacity}
       />
+    </mesh>
+  );
+}
+
+function Box(props) {
+  const { color } = props;
+  const [ref] = useBox(() => ({
+    position: props.position
+  }));
+
+  return (
+    <mesh ref={ref} onClick={props.onClick} position={props.position}>
+      <boxBufferGeometry args={props.args} />
+      <meshLambertMaterial attach="material" color={color} />
+    </mesh>
+  );
+}
+
+function SimpleBox(props) {
+  return (
+    <mesh
+      onClick={props.onClick}
+      position={props.position}
+      rotation={[Math.PI / 3, 0, 0]}
+    >
+      <boxGeometry args={props.args} />
+      <meshBasicMaterial color={props.color} />
     </mesh>
   );
 }
@@ -184,6 +211,26 @@ export default function Test() {
     return Math.floor(Math.random() * Math.floor(max));
   }
 
+  function undoLastBall() {
+    let tempBalls = [...balls];
+    let ballToUndo = tempBalls.pop();
+    if (ballToUndo.id === active) {
+      setActive("");
+    }
+    setBalls([...tempBalls]);
+  }
+
+  function deleteActiveBall() {
+    let tempBalls = [...balls];
+    tempBalls.forEach((ball, index) => {
+      if (ball.id === active) {
+        tempBalls.splice(index, 1);
+      }
+    });
+    setActive("");
+    setBalls([...tempBalls]);
+  }
+
   // {camera && (
   //   <FlyControls movementSpeed={10} rollSpeed={0.1} dragToLook={true} />
   // )}
@@ -199,12 +246,27 @@ export default function Test() {
           color="lightgreen"
           opacity={0.5}
           onClick={e => {
-            console.log("onClick", e);
             handleCanvasClick(e);
             e.stopPropagation();
           }}
-          onPointerUp={e => {
-            console.log("pointerUp", e);
+        />
+        <Box
+          id={"undoBox"}
+          color={"green"}
+          args={[1, 4]}
+          position={[4, 4, 0]}
+          onClick={e => {
+            balls.length > 0 && undoLastBall();
+            e.stopPropagation();
+          }}
+        />
+        <SimpleBox
+          id={"deleteActiveBox"}
+          color={"red"}
+          args={[2, 1]}
+          position={[-2, 2, 0]}
+          onClick={e => {
+            deleteActiveBall();
             e.stopPropagation();
           }}
         />
