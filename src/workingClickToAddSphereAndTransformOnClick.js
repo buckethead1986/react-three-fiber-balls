@@ -143,7 +143,7 @@ function getRandomInt(max) {
   return Math.floor(Math.random() * Math.floor(max));
 }
 
-export default function Test() {
+export default function Sandbox() {
   const [balls, setBalls] = useState([]);
   const [active, setActive] = useState("");
   const [counter, setCounter] = useState(0);
@@ -151,10 +151,6 @@ export default function Test() {
   const colors = ["#173f5f", "#20639b", "#ff4f79", "#C44536", "#ed553b"];
 
   function handleCanvasClick(e) {
-    // let mouseX =
-    //   (e.clientX - e.target.offsetLeft) / e.target.clientWidth * 2 - 1;
-    // let mouseY =
-    //   -((e.clientY - e.target.offsetTop) / e.target.clientHeight) * 2 + 1;
     if (active === "") {
       let newBalls = [...balls];
       const color = colors[getRandomInt(6)];
@@ -183,13 +179,18 @@ export default function Test() {
 
   function deleteActiveBall() {
     let tempBalls = [...balls];
-    tempBalls.forEach((ball, index) => {
-      if (ball.id === active) {
-        tempBalls.splice(index, 1);
-      }
+    tempBalls = tempBalls.filter(ball => {
+      return ball.id !== active;
     });
-    setActive("");
+    //------alternate
+    // tempBalls.forEach((ball, index) => {
+    //   if (ball.id === active) {
+    //     tempBalls.splice(index, 1);
+    //   }
+    // });
+    //-------------
     setBalls([...tempBalls]);
+    setActive("");
   }
 
   // {camera && (
@@ -232,7 +233,12 @@ export default function Test() {
         />
 
         {balls.map(props => (
-          <Ball active={active} setActive={setActive} {...props} />
+          <Ball
+            key={props.id}
+            active={active}
+            setActive={setActive}
+            {...props}
+          />
         ))}
       </Physics>
     </Canvas>

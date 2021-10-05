@@ -10,15 +10,7 @@ import {
 } from "@react-three/drei";
 
 function TransformControlsLockScene(props) {
-  // const {
-  //   transform, setTransform,
-  //   mode,
-  //   showX,
-  //   showY,
-  //   showZ
-  // } = props;
   const [state, setState] = useState(props);
-  console.log(state, props);
   // const [active, setActive] = useState(false)
   const orbitControls = useRef();
   const transformControls = useRef();
