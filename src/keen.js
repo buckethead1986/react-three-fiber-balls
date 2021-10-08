@@ -115,10 +115,7 @@ function App() {
     }
     ]);
     useEffect((prop) => {
-  console.log('before', active, prop)
       setActive(prop)
-      console.log('after', active, prop)
-      console.log('keens', keens)
     });
   return (
     <>
