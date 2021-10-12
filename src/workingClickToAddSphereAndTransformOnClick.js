@@ -13,7 +13,7 @@ import {
   useControl
 } from "@react-three/drei";
 
-function Ball(props) {
+function Shape(props) {
   // const [state, setState] = useState(props);
   const [mode, setMode] = useState("translate");
   const { args = [0.2, 32, 32], color, position } = props;
@@ -85,7 +85,11 @@ function Ball(props) {
           e.stopPropagation();
         }}
       >
-        <sphereBufferGeometry args={args} />
+        {props.shape === "ball" ? (
+          <sphereBufferGeometry args={args} />
+        ) : (
+          <boxBufferGeometry args={[1, 4]} />
+        )}
         <meshStandardMaterial color={color} />
       </mesh>
     </TransformControls>
@@ -144,7 +148,8 @@ function getRandomInt(max) {
 }
 
 export default function Sandbox() {
-  const [balls, setBalls] = useState([]);
+  const [shapes, setShapes] = useState([]);
+  const [createdShape, changeCreatedShape] = useState("ball");
   const [active, setActive] = useState("");
   const [counter, setCounter] = useState(0);
   const [camera, setCamera] = useState(true);
@@ -152,14 +157,15 @@ export default function Sandbox() {
 
   function handleCanvasClick(e) {
     if (active === "") {
-      let newBalls = [...balls];
+      let newShapes = [...shapes];
       const color = colors[getRandomInt(6)];
-      newBalls.push({
-        id: `ball-${counter}`,
+      newShapes.push({
+        id: `${createdShape}-${counter}`,
+        shape: createdShape,
         color: color,
         position: [e.point.x, e.point.y, e.point.z]
       });
-      setBalls([...newBalls]);
+      setShapes([...newShapes]);
       setCounter(counter + 1);
     }
   }
@@ -168,28 +174,28 @@ export default function Sandbox() {
     return Math.floor(Math.random() * Math.floor(max));
   }
 
-  function undoLastBall() {
-    let tempBalls = [...balls];
-    let ballToUndo = tempBalls.pop();
-    if (ballToUndo.id === active) {
+  function undoLastShape() {
+    let tempShapes = [...shapes];
+    let shapeToUndo = tempShapes.pop();
+    if (shapeToUndo.id === active) {
       setActive("");
     }
-    setBalls([...tempBalls]);
+    setShapes([...tempShapes]);
   }
 
-  function deleteActiveBall() {
-    let tempBalls = [...balls];
-    tempBalls = tempBalls.filter(ball => {
-      return ball.id !== active;
+  function deleteActiveShape() {
+    let tempShapes = [...shapes];
+    tempShapes = tempShapes.filter(shape => {
+      return shape.id !== active;
     });
     //------alternate
-    // tempBalls.forEach((ball, index) => {
+    // tempShapes.forEach((ball, index) => {
     //   if (ball.id === active) {
-    //     tempBalls.splice(index, 1);
+    //     tempShapes.splice(index, 1);
     //   }
     // });
     //-------------
-    setBalls([...tempBalls]);
+    setShapes([...tempShapes]);
     setActive("");
   }
 
@@ -212,28 +218,40 @@ export default function Sandbox() {
           }}
         />
         <Box
-          id={"undoBox"}
+          id={"undoShape"}
           color={"green"}
           args={[1, 4]}
           position={[4, 4, 0]}
           onClick={e => {
-            balls.length > 0 && undoLastBall();
+            shapes.length > 0 && undoLastShape();
             e.stopPropagation();
           }}
         />
         <SimpleBox
-          id={"deleteActiveBox"}
+          id={"deleteActiveShape"}
           color={"red"}
           args={[2, 1]}
-          position={[-2, 2, 0]}
+          position={[-4, 2, 0]}
           onClick={e => {
-            deleteActiveBall();
+            deleteActiveShape();
+            e.stopPropagation();
+          }}
+        />
+        <SimpleBox
+          id={"toggleCreatedShape"}
+          color={"blue"}
+          args={[2, 2]}
+          position={[0, 2, 0]}
+          onClick={e => {
+            createdShape === "ball"
+              ? changeCreatedShape("cube")
+              : changeCreatedShape("ball");
             e.stopPropagation();
           }}
         />
 
-        {balls.map(props => (
-          <Ball
+        {shapes.map(props => (
+          <Shape
             key={props.id}
             active={active}
             setActive={setActive}
