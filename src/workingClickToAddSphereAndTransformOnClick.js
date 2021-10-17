@@ -16,7 +16,7 @@ import {
 function Shape(props) {
   // const [state, setState] = useState(props);
   const [mode, setMode] = useState("translate");
-  const { args = [0.2, 32, 32], color, position } = props;
+  const { shape, color, position } = props;
   // const orbit = useRef();
   const transform = useRef();
 
@@ -85,16 +85,23 @@ function Shape(props) {
           e.stopPropagation();
         }}
       >
-        {props.shape === "ball" ? (
-          <sphereBufferGeometry args={args} />
-        ) : (
-          <boxBufferGeometry args={[1, 4]} />
-        )}
+        {shapeBufferGeometrySwitcher(shape)}
         <meshStandardMaterial color={color} />
       </mesh>
     </TransformControls>
   );
   // <OrbitControls ref={transform} />
+}
+
+function shapeBufferGeometrySwitcher(shape) {
+  switch (shape.shape) {
+    case "ball":
+      return <sphereBufferGeometry args={shape.args} />;
+    case "cube":
+      return <boxBufferGeometry args={shape.args} />;
+    case "cylinder":
+      return <cylinderBufferGeometry args={shape.args} />;
+  }
 }
 
 function Plane(props) {
@@ -106,7 +113,7 @@ function Plane(props) {
   return (
     <mesh ref={ref} onClick={props.onClick}>
       <planeBufferGeometry args={[100, 100]} />
-      <meshLambertMaterial
+      <meshStandardMaterial
         attach="material"
         color={color}
         transparent={true}
@@ -125,7 +132,7 @@ function Box(props) {
   return (
     <mesh ref={ref} onClick={props.onClick} position={props.position}>
       <boxBufferGeometry args={props.args} />
-      <meshLambertMaterial attach="material" color={color} />
+      <meshStandardMaterial attach="material" color={color} />
     </mesh>
   );
 }
@@ -138,7 +145,7 @@ function SimpleBox(props) {
       rotation={[Math.PI / 3, 0, 0]}
     >
       <boxGeometry args={props.args} />
-      <meshBasicMaterial color={props.color} />
+      <meshStandardMaterial color={props.color} />
     </mesh>
   );
 }
@@ -149,7 +156,10 @@ function getRandomInt(max) {
 
 export default function Sandbox() {
   const [shapes, setShapes] = useState([]);
-  const [createdShape, changeCreatedShape] = useState("ball");
+  const [createdShape, setCreatedShape] = useState({
+    shape: "ball",
+    args: [0.2, 32, 32]
+  });
   const [active, setActive] = useState("");
   const [counter, setCounter] = useState(0);
   const [camera, setCamera] = useState(true);
@@ -160,7 +170,7 @@ export default function Sandbox() {
       let newShapes = [...shapes];
       const color = colors[getRandomInt(6)];
       newShapes.push({
-        id: `${createdShape}-${counter}`,
+        id: `${createdShape.shape}-${counter}`,
         shape: createdShape,
         color: color,
         position: [e.point.x, e.point.y, e.point.z]
@@ -197,6 +207,20 @@ export default function Sandbox() {
     //-------------
     setShapes([...tempShapes]);
     setActive("");
+  }
+
+  function changeCreatedShape() {
+    switch (createdShape.shape) {
+      case "ball":
+        setCreatedShape({ shape: "cube", args: [1, 4] });
+        break;
+      case "cube":
+        setCreatedShape({ shape: "cylinder", args: [0.5, 0.5, 2, 32] });
+        break;
+      case "cylinder":
+        setCreatedShape({ shape: "ball", args: [0.2, 32, 32] });
+        break;
+    }
   }
 
   // {camera && (
@@ -238,14 +262,12 @@ export default function Sandbox() {
           }}
         />
         <SimpleBox
-          id={"toggleCreatedShape"}
+          id={"changeCreatedShape"}
           color={"blue"}
           args={[2, 2]}
           position={[0, 2, 0]}
           onClick={e => {
-            createdShape === "ball"
-              ? changeCreatedShape("cube")
-              : changeCreatedShape("ball");
+            changeCreatedShape();
             e.stopPropagation();
           }}
         />
