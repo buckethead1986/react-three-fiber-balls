@@ -9,6 +9,7 @@ import WorkingClickToAddSphereAndTransformOnClick from "./workingClickToAddSpher
 // import CreateBallsAndTransformOnClick from "./CreateBallsAndTransformOnClick";
 // import DodecahedronFollowingMouse from "./DodecahedronFollowingMouse";
 import TransformControls from "./TransformControls";
+import Test from "./test2";
 
 ReactDOM.render(
   <WorkingClickToAddSphereAndTransformOnClick />,

@@ -16,6 +16,7 @@ import {
 function Shape(props) {
   // const [state, setState] = useState(props);
   const [mode, setMode] = useState("translate");
+  const [hovered, setHover] = useState(false);
   const { shape, color, position } = props;
   // const orbit = useRef();
   const transform = useRef();
@@ -62,10 +63,12 @@ function Shape(props) {
       ref={transform}
       position={position}
       mode={mode}
-      enabled={props.active === props.id ? true : false}
-      showX={props.active === props.id ? true : false}
-      showY={props.active === props.id ? true : false}
-      showZ={props.active === props.id ? true : false}
+      onPointerOver={event => setHover(true)}
+      onPointerOut={event => setHover(false)}
+      enabled={hovered ? true : false}
+      showX={hovered ? true : false}
+      showY={hovered ? true : false}
+      showZ={hovered ? true : false}
     >
       <mesh
         key={props.id}
@@ -73,16 +76,14 @@ function Shape(props) {
         receiveShadow
         onClick={e => {
           if (props.active === props.id) {
+            console.log("if", props.active);
             changeMode();
             e.stopPropagation();
           } else {
+            console.log("else", props.active, props.id);
             props.setActive(props.id);
             e.stopPropagation();
           }
-        }}
-        onPointerMissed={e => {
-          props.active === props.id && props.setActive("");
-          e.stopPropagation();
         }}
       >
         {shapeBufferGeometrySwitcher(shape)}
@@ -90,6 +91,10 @@ function Shape(props) {
       </mesh>
     </TransformControls>
   );
+  // onPointerMissed={e => {
+  //   props.active === props.id && props.setActive("");
+  //   e.stopPropagation();
+  // }}
   // <OrbitControls ref={transform} />
 }
 
@@ -101,6 +106,8 @@ function shapeBufferGeometrySwitcher(shape) {
       return <boxBufferGeometry args={shape.args} />;
     case "cylinder":
       return <cylinderBufferGeometry args={shape.args} />;
+    case "cone":
+      return <coneBufferGeometry args={shape.args} />;
   }
 }
 
@@ -166,6 +173,7 @@ export default function Sandbox() {
   const colors = ["#173f5f", "#20639b", "#ff4f79", "#C44536", "#ed553b"];
 
   function handleCanvasClick(e) {
+    // console.log("handleclick", active);
     if (active === "") {
       let newShapes = [...shapes];
       const color = colors[getRandomInt(6)];
@@ -218,6 +226,9 @@ export default function Sandbox() {
         setCreatedShape({ shape: "cylinder", args: [0.5, 0.5, 2, 32] });
         break;
       case "cylinder":
+        setCreatedShape({ shape: "cone", args: [0.5, 1, 32] });
+        break;
+      case "cone":
         setCreatedShape({ shape: "ball", args: [0.2, 32, 32] });
         break;
     }
